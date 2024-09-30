@@ -55,7 +55,6 @@ func initControlPlane() {
 	cmd := `sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --node-name master-1`
 	runCommand(cmd)
 
-	// Setup kubeconfig for kubectl on the master node
 	kubeConfigCmds := []string{
 		"mkdir -p $HOME/.kube",
 		"sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config",
@@ -63,7 +62,6 @@ func initControlPlane() {
 	}
 	runCommands(kubeConfigCmds)
 
-	// Verify kubeconfig
 	runCommand("kubectl get po -n kube-system")
 }
 
@@ -72,7 +70,6 @@ func installCalico() {
 	runCommand(cmd)
 }
 
-// runCommand runs a single shell command
 func runCommand(command string) {
 	cmd := exec.Command(ShellToUse, "-c", command)
 	output, err := cmd.CombinedOutput()
@@ -82,25 +79,47 @@ func runCommand(command string) {
 	fmt.Printf("Command Output: %s\n", output)
 }
 
-// runCommands runs a series of commands
 func runCommands(commands []string) {
 	for _, cmd := range commands {
 		runCommand(cmd)
 	}
 }
 
+func SetupMiniKube() {
+	cmd := []string{
+		"sudo snap install microk8s --classic",
+		"microk8s enable dns",
+		"microk8s enable dashboard",
+		"microk8s kubectl get all --all-namespaces",
+		"microk8s status --wait-ready",
+	}
+	runCommands(cmd)
+}
+
 var kubernetesCmd = &cobra.Command{
 	Use:   "kubernetes [version]",
 	Short: "Set up Kubernetes",
 	Long:  `Installs and configures Kubernetes in your environment.`,
-	Args:  cobra.ExactArgs(1), // Expecting exactly 1 argument (the Kubernetes version)
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		version := args[0] // Get the version from the arguments
+		version := args[0]
 		fmt.Printf("Setting up Kubernetes version %s...\n", version)
 		SetupKubeAdm(version)
 	},
 }
 
+var MiniKubeCmd = &cobra.Command{
+	Use:   "minik8s",
+	Short: "Set up mini k8s",
+	Long:  `Installs minik8s in your environment.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Printf("Setting up Mini Kube\n")
+		SetupMiniKube()
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(kubernetesCmd)
+	rootCmd.AddCommand(MiniKubeCmd)
+
 }
