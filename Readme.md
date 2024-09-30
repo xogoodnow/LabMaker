@@ -1,10 +1,10 @@
 # LabMaker
 
-This repository contains `LabMaker`, a Python script that automates the setup of lab environments. The script installs Go, sets up a standard Kubernetes cluster, and configures a MicroK8s cluster on a single node.
+This repository contains `LabMaker`, a Golang cli/Python script that automates the setup of lab environments. The script installs Go, sets up a standard Kubernetes cluster, and configures a MicroK8s cluster on a single node.
 
-## Features
+## Good for
 
-- Installs Go programming language.
+- Network/Disk/Resource utilities.
 - Sets up a standard Kubernetes cluster.
 - Configures a MicroK8s cluster.
 
@@ -20,11 +20,18 @@ This repository contains `LabMaker`, a Python script that automates the setup of
 2. Run the script:
 
     ```bash
+    go build .
+    ./Labmaker ....
+    ```
+
+    OR
+    ```bash
     python labmaker.py
     ```
 
 ## Requirements
 
+- Golang 1.23
 - Python 3.x
 - Administrator privileges
 - Internet connection
